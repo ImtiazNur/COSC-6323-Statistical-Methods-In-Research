@@ -1,0 +1,28 @@
+---
+title: "exercise5"
+author: "Mohammad Imtiaz Nur"
+date: "3/6/2021"
+output: pdf_document
+---
+
+# ID: 1878074
+
+```{r anova_test}
+soilData <- read.csv("SiltDataset.csv")
+
+#ANOVA test
+siteFactor <- factor(soilData$site)
+analysis <- aov(soilData$silt ~ siteFactor)
+summary(analysis)
+
+```
+
+As the p-value (0.00293) is less than 0.05, the difference in means is statistically significant.Hence there is a difference in silt content among the soils from different sites.
+
+```{r boxplot}
+boxplot(soilData$silt~siteFactor,xlab="site",
+        ylab="Silt",
+        main="Boxplots of silt vs site variety")
+means <- tapply(soilData$silt, siteFactor, mean)
+points( means, pch=8, col="green")
+```

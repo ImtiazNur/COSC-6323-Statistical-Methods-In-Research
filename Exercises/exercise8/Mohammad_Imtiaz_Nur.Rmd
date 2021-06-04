@@ -1,0 +1,64 @@
+---
+title: "Exercise8"
+author: "Mohammad Imtiaz Nur"
+date: "4/2/2021"
+output: pdf_document
+---
+
+# ID: 1878074
+
+# 1.0:
+
+```{r read_data}
+data <- read.csv("politeness_data.csv", header = TRUE)
+boxplot(frequency~gender*attitude, data = data,
+        xlab='pitch',
+        ylab='politeness',
+        main="Politeness(frequency) vs Pitch(attitude*gender)")
+```
+
+
+In the above plot, for both informal or polite attitudes, male pitching range is lower than female pitching range. 
+Also, t is quite clear that there is a difference between female polite and informal frequency. Though the difference in frequency is very low for male, but polite frequency is slightly lower than male informal frequncy.
+
+# 1.1:
+
+```{r model_1}
+model_1 <- lm(frequency~attitude, data = data)
+summary(model_1)
+```
+
+As the p value (0.207) is greater than the significance level (0.05), only attitude variable alone can't make the model significant. Also the R-squared value(0.01958) signifies that our model takes only 1.958% data from the entire dataset which makes the model irrelevant.
+
+# 1.2:
+
+```{r model_2}
+model_2 <- lm(frequency~gender, data = data)
+summary(model_2)
+```
+
+
+As the p value (< 2.2e-16) is very much lower than the significance level (0.05), the gender variable appears to build a very significant. model. Also the R-squared value(0.6884) signifies that our model takes 68.84% data from the entire dataset which makes the model a good fit for analysis.
+
+# 1.3:
+
+```{r model_3}
+model_3 <- lm(frequency~attitude*gender, data = data)
+summary(model_3)
+```
+
+As the p value (< 2.2e-16) is very much lower than the significance level (0.05), the attitude*gender variables together appears to build a very significant. model. Also the R-squared value(0.7038) signifies that our model takes 70.38% data from the entire dataset which makes the model a good fit for analysis.
+
+
+# 1.4:
+
+ANOVA test to compare the significance of all three models.
+
+```{r compare}
+anova(model_1,model_2)
+anova(model_2,model_3)
+anova(model_1,model_3)
+```
+
+
+From the ANOVA test, we can summarize that model_3 can be used for more accurate prediction than the other two models.

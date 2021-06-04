@@ -1,0 +1,86 @@
+---
+title: "Exercise7"
+author: "Mohammad Imtiaz Nur"
+date: "3/27/2021"
+output: pdf_document
+---
+## ID: 1878074
+
+```{r install_packages, include=FALSE}
+
+#install.packages("remotes")
+#remotes::install_github("kassambara/datarium")
+#remotes::install_github("cardiomoon/ggiraphExtra")
+```
+
+```{r data_load}
+data("marketing", package = "datarium")
+head(marketing, 5)
+
+```
+
+## Task 0: Multiple Linear Regression Model
+
+Multiple linear regression model as follows to estimate sales based on the advertising budget for youtube, facebook and newspaper:
+
+$sales = b0 + b1*youtube + b2*facebook + b3*newspaper$
+
+```{r regression_model}
+model <- lm(sales ~ youtube + facebook + newspaper, data = marketing)
+model_summary <- summary(model)
+model_summary
+
+```
+
+## Task 1: Plots
+
+```{r plots}
+library(GGally)
+ggpairs(marketing)
+
+par(mfrow=c(2, 2))
+plot(model)
+```
+
+
+## Task 2: Examining F-statistic
+
+Let,
+
+$H_0$ = No predictor variables are significantly related to the outcome variable.
+
+$H_1$ = At least one predictor variables is significantly related to the outcome variable.
+
+From the above model, p-value of the F-statistic is < 2.2e-16, which is highly significant. Hence, we can reject the null hypothesis as at least one of the predictor variables is significantly related to the outcome variable.
+
+## Task 3: Examining Predictor Variable
+
+We can examine the coefficients table, which shows the estimate of regression beta coefficients and the associated t-statistic p-values.
+
+```{r task3}
+summary(model)$coef
+```
+
+For a given predictor, the t-statistic evaluates whether or not there is significant association between the predictor and the outcome variable, i.e. whether the beta coefficient of the predictor is significantly different from zero.
+
+From the t-values it can be seen that, changing in youtube and facebook advertising budget are significantly associated to changes in sales while changes in newspaper budget is not significantly associated with sales. 
+
+So the significant predictor variables are Youtube and Facebook.
+
+## Task 4: Regression Equation
+
+$sales = 3.53+ 0.046*youtube + 0.188*facebook + (-0.001)*newspaper$
+
+We can remove the newspaper variable from the model as it is not significant.
+
+```{r regression}
+updated_model <- lm(sales ~ youtube + facebook, data = marketing)
+summary(updated_model)
+```
+So, the multiple linear regression model equation can be written  as follow: 
+
+$sales = 3.50+ 0.046*youtube + 0.188*facebook$
+
+## Task 5 :  Recommendations
+
+For the budget planning based on the reviewed data, as both Youtube and Facebook have a very strong positive correlation with sales, we certainly can say that increasing the advertisement budget in these two sector will increase the sales for the company. And an increase/cut in the advertising budget for newspaper will not significantly affect sales.

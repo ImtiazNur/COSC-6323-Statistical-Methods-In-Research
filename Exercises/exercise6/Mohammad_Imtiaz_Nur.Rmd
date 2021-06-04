@@ -1,0 +1,51 @@
+---
+title: "Exercise6"
+author: "Mohammad Imtiaz Nur"
+date: "3/12/2021"
+output: pdf_document
+---
+# ID: 1878074
+
+```{r setup}
+data <- read.table("./Geese.txt", header=TRUE)
+model <- lm(time~temp, data = data)
+
+summary(model)
+```
+
+## 2. Computing the LM coefficients:
+```{r q2}
+coefs = coefficients(model)
+coefs
+```
+
+## 3. Regression Equation:
+
+## Time = coefs[1] + coefs[2] * Temp
+
+Or
+
+Time = -19.66676 + 1.68065 * Temp
+
+
+## 4. The confidence interval for $\beta$ 1:
+```{r q4}
+#?confint
+confint(model)
+```
+
+From the above result, we can be 95% confident about the slope of the regression line that it is
+between 1.209 and 2.153 minutes for increase of temperature per degree.
+
+
+## 5. Correlation check
+```{r q5}
+cor.test(data$temp, data$time)
+```
+
+Since p-value(1.653e-08) < 0.05, we can reject the null hypothesis. Hence, there is a significant relationship between the time and temperature.
+
+# 1. Necessary Plots
+```{r q1}
+plot(model)
+```

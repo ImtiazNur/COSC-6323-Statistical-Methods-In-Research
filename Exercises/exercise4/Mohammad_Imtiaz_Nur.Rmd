@@ -1,0 +1,76 @@
+---
+title: "Exercise4"
+author: "Mohammad Imtiaz Nur"
+date: "2/26/2021"
+output: pdf_document
+---
+# ID: 1878074
+
+```{r setup}
+
+
+# Intelligence score data
+nonsmokers <- c(18,22,21,17,20,17,23,20,22,21)
+smokers <- c(16,20,14,21,20,18,13,15,17,21)
+
+
+# Creating a data frame
+my_data <- data.frame( 
+    group = rep(c("nonsmokers", "smokers"), each = 10),
+    score = c(nonsmokers,  smokers)
+)
+```
+
+
+## 1. Summary Statistics
+```{r code_1}
+# Summary statistics (using dplyr)
+library(dplyr)
+group_by(my_data, group) %>% 
+  summarise(count = n(), 
+            mean = mean(score, na.rm = TRUE),
+            sd = sd(score, na.rm = TRUE)
+            )
+```
+
+
+## 2. Boxplots
+```{r code_2}
+boxplot(nonsmokers, smokers, ylab="Scores", names=c("nonsmokers","smokers"),
+        main="Digit Span Task Performance")
+```
+
+## 3. Shapiro-Wilk test
+```{r code_3}
+
+# Use Shapiro-Wilk
+d <- with(my_data, 
+          score[group == "nonsmokers"] - 
+              score[group == "smokers"])
+
+# Shapiro-Wilk normality test for the differences
+shapiro.test(d)
+```
+
+
+Here, Null hypothesis: the data are normally distributed
+Alternative hypothesis: data not normally distributed
+
+From the output, the p-value (0.9339) is greater than the significance level 0.05 implying that the distribution of the differences (d) are not significantly different from normal distribution. In other words, we can assume the normality.
+
+## 4. t-test
+``` {r code_4}
+res <- t.test(nonsmokers, smokers, paired=TRUE)
+res
+```
+
+The p-value of the test is 0.08004, which is greater than the significance level alpha = 0.05. We can then accept null hypothesis and conclude that the average score of the nonsmokers isn't significantly different from the average score of the smokers with a p-value = 0.08004.
+
+## 5. Paired t-test
+``` {r code_5}
+res <- t.test(score ~ group, data = my_data, paired = TRUE)
+res
+```
+
+
+The p-value of the test is 0.08004, which is greater than the significance level alpha = 0.05. We can then accept null hypothesis and conclude that the average score of the nonsmokers isn't significantly different from the average score of the smokers with a p-value = 0.08004.
