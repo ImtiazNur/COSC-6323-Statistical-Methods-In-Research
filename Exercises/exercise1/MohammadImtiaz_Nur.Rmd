@@ -1,0 +1,39 @@
+---
+title: "Exercise1"
+author: "Mohammad Imtiaz Nur"
+date: "1/29/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+# ID: 1878074
+
+*Jitter points hidden under boxplots (Figure 1)
+
+```{r mpg, echo=FALSE}
+library(ggplot2)
+ggplot(data = mpg, aes(x = class, y = hwy)) +
+  geom_jitter(aes(colour = class)) +
+  geom_boxplot() +
+  xlab(expression('Vehicle Type,'~italic(n)~'=234')) +
+  ylab('Highway miles per gallon') +
+  ggtitle('Figure 1. Vehicle type vs Highway miles per gallon') +
+  theme(legend.title = element_blank())
+```
+
+
+
+
+*Jitter points shown over boxplots  (Figure 2)
+
+```{r mpg2, echo=FALSE}
+library(ggplot2)
+ggplot(data = mpg, aes(x = class, y = hwy)) +
+  geom_boxplot() +
+  xlab(expression('Vehicle Type,'~italic(n)~'=234')) +
+  ylab('Highway miles per gallon') +
+  ggtitle('Figure 2. Vehicle type vs Highway miles per gallon') +
+  geom_jitter(aes(colour = class)) +
+  theme(legend.title = element_blank())

@@ -1,0 +1,51 @@
+---
+title: "Exercise3"
+author: "Mohammad Imtiaz Nur"
+date: "2/12/2021"
+output: pdf_document
+---
+## ID: 1878074
+
+## Task 1
+Suppose a coin toss turns up 13 heads out of 20 trials. At .05 significance level,
+can one reject the null hypothesis that the coin toss is fair?
+
+## Solution:
+```{r task1}
+prop.test(13, 20, p=0.5, correct=FALSE)
+```
+
+Since the p value (0.1797) is greater than 0.05, we can't reject H0. Also from the X-Squared value (1.8), the value is not in the rejection region, therefore we fail to reject H0.
+
+
+
+## Task 2
+An outbreak of Salmonella-related illness was attributed to ice cream produced
+at a certain factory. Scientists measured the level of Salmonella in 9 randomly
+sampled batches of ice cream. The levels (in MPN/g) are : 0.593, 0.142, 0.329,
+0.691, 0.231, 0.793, 0.519, 0.392, 0.418.
+Is there evidence that the mean level of Salmonella in the ice cream is greater
+than 0.3 MPN/g?
+
+## Solution:
+Let,
+$\mu$ = mean level of Salmonella in all batches of ice cream. 
+
+We can express the hypothesis as:
+
+H0: $\mu$ <= 0.3
+
+Ha: $\mu$ > 0.3
+
+
+So, our parameters for the t-testwe will be: alternative="greater", mu=0.3.
+
+```{r task2}
+x = c(0.593, 0.142, 0.329, 0.691, 0.231, 0.793, 0.519, 0.392, 0.418)
+t.test(x, alternative="greater", mu=0.3)
+```
+
+At the 0.05 significance level, the p value (0.02927) is less than 0.05. So, we can reject H0 and accept the alternate hypothesis (Ha). Hence, there is enough evidence that the mean level of Salmonella in the ice cream is greater than 0.3 MPN/g.
+
+
+

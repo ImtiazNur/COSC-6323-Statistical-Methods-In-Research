@@ -1,0 +1,101 @@
+---
+title: "Exercise_2"
+author: "Mohammad Imtiaz Nur"
+date: "2/6/2021"
+output: pdf_document
+---
+
+## ID: 1878074
+
+## 1. Comparison of infants birth weight between smoking and non-smoking mothers
+
+```{r plot_1}
+library(tidyverse)
+
+# Load data from MASS into a tibble
+birthwt <- as_tibble(MASS::birthwt)
+#?birthwt
+
+# Rename variables
+colnames(birthwt) <- c("birthwt.below.2500", 
+                       "mother.age",
+                       "mother.weight",
+                       "race",
+                       "mother.smokes",
+                       "previous.prem.labor",
+                       "hypertension",
+                       "uterine.irr",
+                       "physician.visits",
+                       "birthwt.grams")
+
+# Change factor level names
+birthwt <- birthwt %>%
+    mutate(race = recode_factor(race, `1` = "white", `2` = "black", `3` = "other")) %>%
+    mutate_at(c("mother.smokes", "hypertension", "uterine.irr", "birthwt.below.2500"),
+              ~ recode_factor(.x, `0` = "no", `1` = "yes"))
+
+# Create boxplot showing how birthwt.grams varies between
+# history of smoking
+qplot(x = mother.smokes, y = birthwt.grams,
+      geom = "boxplot", data = birthwt,
+      xlab = paste("Mother smokes, n = ", nrow(birthwt)), 
+      ylab = "Birthweight (grams)",
+      fill = I("lightblue"))
+
+```
+Above boxplot shows that, though in the smoking mother group the birthweight values including the mean are lower than the non-smoking mother group; we can see some significant overlapping between both groups. Hence, this boxplot distribution can't signifies that lower birthweight of infants occured due to smoking of their mother. So, we can define our null hypothesis as the mothers having smoking habit don't need to be concerned about baby's birthweight.
+
+## Testing of first hypothesis
+
+We tried two-tailed hypothesis test for our case.
+```{r t_test_1}
+birthwt.t.test <- t.test(birthwt.grams ~ mother.smokes, data = birthwt)
+birthwt.t.test
+
+birthwt.t.test$p.value
+```
+
+
+Our study finds that birth weights are on average greater in the non-smoking group compared to the smoking group.
+
+Here,
+t-statistic = `r round(birthwt.t.test$statistic, 3)`, p-value = `r round(birthwt.t.test$p.value, 3)` =  `r round(birthwt.t.test$p.value*100, 3)`%, confidence interval(95%) = `r round(birthwt.t.test$conf.int, 3)`.
+
+As the p-value is less than 5%, the null hypothesis can be rejected. So, the overlapping in the boxplot is not significant which means that, mothers having smoking habit are prone to give birth to infant with lower birthweight than the non-smoking mothers.
+
+
+
+
+
+
+## 2. Comparison of infants birthweight between a group of mothers with a presence of uterine irritability and a group of mothers without it.
+
+```{r plot_2}
+# Create boxplot showing how birthwt.grams varies between
+# history of hypertension
+qplot(x = uterine.irr, y = birthwt.grams,
+      geom = "boxplot", data = birthwt,
+      xlab = paste("Mother with a presense of uterine irritability, n = ", nrow(birthwt)), 
+      ylab = "Birthweight (grams)",
+      fill = I("lightblue"))
+
+```
+Above boxplot shows that, though in the uterine irritability mother group the birthweight values including the mean are lower than the non-uterine irritability mother group; we can see some significant overlapping between both groups. Hence, this boxplot distribution can't signifies that lower birthweight of infants occured due to uterine irritability of their mother. So, we can define our null hypothesis as the mothers having uterine irritability don't need to be concerned about baby's birthweight.
+
+## Testing of second hypothesis
+
+We tried two-tailed hypothesis test for our case.
+```{r t_test_2}
+birthwt.t.test <- t.test(birthwt.grams ~ uterine.irr, data = birthwt)
+birthwt.t.test
+
+birthwt.t.test$p.value
+```
+
+
+Our study finds that birth weights are on average greater in the non-uterine irritability group compared to the uterine irritability group.
+
+Here,
+t-statistic = `r round(birthwt.t.test$statistic, 3)`, p-value = `r round(birthwt.t.test$p.value, 4)` =  `r round(birthwt.t.test$p.value*100, 3)`%, confidence interval(95%) = `r round(birthwt.t.test$conf.int, 3)`.
+
+As the p-value is less than 5%, the null hypothesis can be rejected. So, the overlapping in the boxplot is not significant which means that, mothers having uterine irritability are prone to give birth to infant with lower birthweight than the non-uterine irritability mothers.
