@@ -1,0 +1,42 @@
+---
+title: "Exercise-10"
+author: "Mohammad Imtiaz Nur"
+date: "4/16/2021"
+output: pdf_document
+---
+
+# ID: 1878074
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task 1
+```{r read_data}
+csv_data = read.csv("fastfood.csv")
+```
+
+```{r task1}
+single_vector = c(t(as.matrix(csv_data)))
+
+f1 = c("Item1", "Item2", "Item3") #first factors
+f2 = c("East", "West") #second factors
+k1 = length(f1)
+k2 = length(f2)
+n = 4 #observations per treatment
+
+tm1 = gl(k1, 1, n*k1*k2, factor(f1))
+tm2 = gl(k2, n*k1, n*k1*k2, factor(f2))
+
+av = aov(single_vector ~ tm1 * tm2)
+
+summary(av)
+```
+
+From the above summary, since the p-value (0.00149) for the menu items is less than the .05 significance level, we reject the null hypothesis that the mean sales volume of the new menu items are all equal. 
+
+Moreover, the p-value(1.2e-05) for the east-west coasts comparison is also less than the .05 significance level. It shows there is a difference in overall sales volume between the coasts.
+
+Finally, the last p-value of 0.01132 (< 0.05) indicates that there is a possible interaction between the menu item and coast location factors, i.e., customers from different coastal regions have different tastes.
+
+Reference: http://www.r-tutor.com/elementary-statistics/analysis-variance/factorial-design

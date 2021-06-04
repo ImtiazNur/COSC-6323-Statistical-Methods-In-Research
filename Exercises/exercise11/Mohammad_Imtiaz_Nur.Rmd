@@ -1,0 +1,166 @@
+---
+title: "Exercise 11"
+author: "Mohammad Imtiaz Nur"
+date: "4/24/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r linear_model}
+# data = read.table(file="Exc_data.txt",
+#                col.names=c("School", "Year", "Words.per.minute"), 
+#                fill=FALSE, 
+#                strip.white=TRUE)
+
+# Was getting some error in building model from txt file
+
+data = read.csv("Exc_data.csv")
+
+data$School = factor(data$School,
+                         levels=c("1", "2", "3"))
+data$Year = factor(data$Year,
+                   levels=c("7", "8", "9", "10", "11", "12"))
+
+
+# data = data[complete.cases(data), ] #needed for txt file
+
+model = lm(Words.per.minute ~ School + Year,
+           data = data)
+summary(model)
+```
+
+
+# 1)
+
+```{r lsmean}
+library(lsmeans)
+
+marginal = lsmeans(model, ~ School)
+
+marginal
+```
+
+## Here, LS mean typing speed for all three schools are respentively 54.8, 65.7 and 60.0
+
+
+### Anova Test
+```{r anova}
+library(car)
+Anova(model)
+```
+From the anova test,
+
+
+# 2)
+
+
+## the p value of School (0.005683) is much less than the significance level (0.05). Hence, we can say that there is significant evidence that School is related to the typing speed.
+
+# 3)
+
+
+## the p value of Year (0.391585) is much greater than the significance level (0.05). Hence, we can say that there is no significant evidence that Year is related to the typing speed.
+
+# 4)
+
+```{r histogram}
+library(rcompanion)
+x = residuals(model)
+
+plotNormalHistogram(x)
+
+```
+
+## From the histogram, it reflects that the residuals are reasonably normal.
+
+```{r homoscedastic}
+plot(fitted(model),
+     residuals(model))
+```
+
+## From the residual vs fitted plot, we can see almost equal distribution of points on both side of 0. So, there is no apparent pattern. So the residuals seems reasonably homoscedastic. 
+
+
+# 5)
+
+```{r pairs_tukey}
+pairs(marginal,
+      adjust="tukey")
+
+```
+
+## Applying tukey paired test, the p-value by pairing School 1-2 is 0.0040 which is less than 0.05; hence makes it significant. On the other hand, pairing schools 1-3 and 2-3, p-value in greater for both cases; hence makes it not significant.
+
+# 6
+
+```{r plot}
+library(multcompView)
+CLD = multcomp::cld(marginal,
+          alpha   = 0.05,
+          Letters = letters,  # Use lower-case letters for .group
+          adjust  = "tukey")  # Tukey-adjusted p-values
+CLD
+
+CLD$School = factor(CLD$School,
+                        levels=c("1","2","3"))
+
+#  Remove spaces in .group  
+CLD$.group=gsub(" ", "", CLD$.group)
+
+# Plot
+library(ggplot2)
+ggplot(CLD,
+       aes(x     = School,
+           y     = lsmean,
+           label = .group)) +
+    
+    geom_point(shape  = 15,
+               size   = 4) +
+    
+    geom_errorbar(aes(ymin  =  lower.CL,
+                      ymax  =  upper.CL),
+                  width =  0.2,
+                  size  =  0.7) +
+    
+    theme_bw() +
+    theme(axis.title   = element_text(face = "bold"),
+          axis.text    = element_text(face = "bold"),
+          plot.caption = element_text(hjust = 0)) +
+    
+    ylab("Least square mean\ntyping speed (words / minute)") +
+    
+    geom_text(nudge_x = c(0, 0, 0),
+              nudge_y = c(10, 10, 10),
+              color   = "black")
+
+```
+
+## From the above plot of the LS means and standard error, though it shows some large difference between School 1 and 2, but the significant difference between School 1-2 after pairing is not apparent. Due to the overlapping of the plots, it is hard to decide if there are significantly different mean.
+
+
+# 7)
+
+```{r summarize}
+library(FSA)
+Summarize(Words.per.minute ~ School + Year,
+          data=data)
+```
+
+## The schools have different number of students from each year. That is, the design is unbalanced.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

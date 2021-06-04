@@ -1,0 +1,90 @@
+---
+title: "Exercise-9"
+author: "Mohammad Imtiaz Nur"
+date: "4/8/2021"
+output: pdf_document
+---
+
+# ID : 1878074
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r data_read, include=FALSE}
+df_article = read.csv(file = "ArticleLevel-RegData-ALLSA_Xc_1_NData_655386_LONGXCIP2.csv",  header = TRUE)
+```
+
+```{r task, warning=FALSE}
+library(dplyr)
+library(rcompanion)
+library(questionr)
+library(modelr)     
+library(broom)      
+library(pscl)
+
+#### Filters
+###### Filter Year [1970-2018]
+###### Filter Kp >= 2 and Wp >= 2
+df_article = df_article %>% filter(Yp >= 1970)
+df_article = df_article %>% filter(Yp <= 2018)
+df_article = df_article %>% filter(Kp >= 2)
+df_article = df_article %>% filter(nMeSHMain >= 2)
+df_article = df_article %>% filter(IRegionRefinedp > 0 & IRegionRefinedp < 7)
+
+#### Convert Data types
+df_article$eidsp = as.factor(df_article$eidsp)
+df_article$Yp = as.integer(df_article$Yp)
+df_article$Kp = as.integer(df_article$Kp)
+df_article$XCIPp = as.factor(df_article$XCIPp)
+df_article$NRegp = as.integer(df_article$NRegp)
+df_article$NSAp = as.integer(df_article$NSAp)
+df_article$NCIPp = as.integer(df_article$NCIPp)
+df_article$nMeSHMain = as.integer(df_article$nMeSHMain)
+df_article$IRegionRefinedp = as.factor(df_article$IRegionRefinedp)
+
+## Model 1 - for X_CIP
+options(scipen=2)
+model1 <- glm(XCIPp ~ Yp + log(Kp) + log(nMeSHMain) + NRegp + NSAp, 
+              data = df_article, family=binomial(link='logit'))
+
+# MeanZJp
+
+# Here:
+# XCIPp: binary indicator variable = 1 if any 2+ CIP are present, and 0 otherwise
+# Yp: article’s publication year
+# Kp: article’s coauthor count based upon author list in PubMed record
+# NRegp: article’s count variable indicating the total number of regions 
+# NSAp: article’s count variable indicating the total number of SAps
+```
+
+# Model Summary
+
+```{r summary}
+summary(model1)
+```
+
+From the above summary, all the p-values of the predictors are very much less than the significance value (0.05). So, all the variables are very much significant for the model for predicting the cross-disciplinary in CIP (XCIPp variable) Classification of Instructional Programs.
+
+# Pseudo r-squared measures
+
+```{r r_squared}
+nagelkerke(model1)
+```
+
+Our model is compared against the null model. From the McFadden's pseudo r-squared values ranging from 0.2 to 0.4 is a good model fit. The pseudo r-squared values ranges from 0.19 to 0.26 for our model which means though it captures the variance of the data moderately but still not a strong fit.
+
+# Odds ratio
+
+```{r odds_ratio}
+
+output = odds.ratio(model1)
+output = apply(output, 2, formatC, format="f", digits=4)
+output
+```
+
+Odds ratio > 1 means greater likelihood of having the outcome while < 1 refers to lower likelihood of having the outcome.
+
+From the output of the odds ratio, except Major Mesh all the predictors count have odds ratio values greater than 1 which refers to greater likelihood of having the outcome.
+
+The odds ratio for Major Mesh count is less than 1 refers to the likelihood of predicting the outcome is lower by 6.68%.

@@ -1,0 +1,64 @@
+---
+title: "Exercise 12"
+author: "Mohammad Imtiaz Nur"
+date: "5/1/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Task 1 : Friedman Test
+
+
+```{r task1}
+data <- 
+  matrix(c(2, 1, 2004,
+           48, 1, 2005,
+           40, 1, 2006,
+           3, 2, 2004,
+           120, 2, 2005,
+           81, 2, 2006,
+           2, 3, 2004,
+           16, 3, 2005,
+           36, 3, 2006,
+           7, 4, 2004,
+           21, 4, 2005,
+           17, 4, 2006,
+           2, 5, 2004,
+           14, 5, 2005,
+           17, 5, 2006),
+         nrow = 15,
+         byrow = TRUE,
+         dimnames = list(1 : 15,
+                         c("Count", "Month", "Year")))
+
+friedman.test(data)
+```
+
+
+From the Friedman Test, the p-value (1.731e-06) is very much less than the significance level 0.05.
+Hence, strong evidence against the null that all medians are equal and say the difference between some of the median count values for years are statistically significant when months are block.
+
+
+
+
+
+## Task 2: Post-hoc Test
+
+```{r task2}
+count<-data[,1]
+# month<-data[,2]
+# year<-data[,3]
+
+ data2 <- data.frame(
+   group = rep(c("2004", "2005","2006")),
+   weight = c(count))
+
+ pairwise.wilcox.test(count, data2$group, p.adjust.method = "BH", exact=FALSE)
+```
+
+
+From the Pairwise Wilcox Test, the p-value is 0.017 for both yearly pair in 2004-2005 and 2004-2006 which is less than 0.05. Hence, 2004 year's median count is significantly different from 2005 and 2006’s median count.
