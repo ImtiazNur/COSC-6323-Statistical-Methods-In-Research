@@ -1,0 +1,73 @@
+---
+title: "Project Milestone 2"
+author: "Fettah Kiran, Mohammad Imtiaz Nur"
+date: "4/9/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+**A**
+```{r FigA, echo=FALSE, out.width = '90%',fig.show = "hold"}
+
+library(png)
+library(grid)
+library(gridExtra)
+img0 <-  rasterGrob(as.raster(readPNG("FigA/FigA.png")), interpolate = FALSE,  height=unit(0.9, "npc"))
+grid.arrange( img0, ncol = 1)
+
+
+```
+
+
+\
+**B**       
+```{r FigB, echo=FALSE, fig.cap=c("Evolution of SA boundary-crossing within and across disciplinary clusters."), out.width = '90%',fig.show = "hold"}
+
+# figs<-c("Mono_Files/mono.png","XD_Files/XD.png","X_M_Files/diff_x_m.png")
+# knitr::include_graphics(figs[1])
+# knitr::include_graphics(figs[2])
+# knitr::include_graphics(figs[3])
+library(png)
+library(grid)
+library(gridExtra)
+# img1 <-  rasterGrob(as.raster(readPNG("Mono_Files/mono.png")), interpolate = FALSE,  height=unit(0.3, "npc"), width = unit(1,"npc"))
+# img2 <-  rasterGrob(as.raster(readPNG("XD_Files/XD.png")), interpolate = FALSE,  height=unit(0.3, "npc"), width = unit(1,"npc"))
+# img3 <-  rasterGrob(as.raster(readPNG("X_M_Files/diff_x_m.png")), interpolate = FALSE,  height=unit(0.3, "npc"), width = unit(1,"npc"))
+# grid.arrange( img1, img2, img3, ncol = 3)
+
+
+library(png)
+library(grid)
+library(gridExtra)
+img0 <-  rasterGrob(as.raster(readPNG("FigB/FigB.png")), interpolate = FALSE,  height=unit(0.53, "npc"))
+grid.arrange( img0, ncol = 1)
+
+
+
+```
+Figure 1.A \
+
+We have created ten dataset with a range of 4years separation from 1970 to 2018 with six SA columns (SA1 to SA6) and nine CIP columns (CIP1 to CIP9).\
+ 
+Each of our plot in FIgure-1, represents a CIP type where each bar represents the data separated by 4 years difference. And different color in each bar represents different SA type data which 
+In simple words, each of our nine plots belongs to nine CIP type. Each plot is divided into ten columns for
+ten separate year duration data subset. In each column, each color represent a normalized SA type, which is calculated by the following formula:\
+ 
+sum(CIP_i * SA_j) / sum{sum(CIP_i * SA_1) + sum(CIP_i * SA_2) + sum(CIP_i * SA_3) + sum(CIP_i * SA_4) + sum(CIP_i * SA_5) + sum(CIP_i * SA_6)} \
+ 
+Conclusion from figures: \
+ 
+1. Psychiatry and Psychology research increases for the Neurosciences discipline, but for other disciplines it is seen some ups and down. \
+
+2. The Phenomena and Processes research seems not to vary much for all disciplines. \
+
+3. The Technology & Information Sciences research has shown some effect in only Biotech and Genetics;  and Chem. and Phys. and Math discipline. \
+
+4. The  Anatomy and Organisms research shows a decreasing interest from all the disciplines.\
+
+5. The Health discipline and Techniques and Equipment discipline show an increasing interest for all the disciplines.\
+
+
+Figure 1.B shows Empirical CIP-SA association networks calculated for non-overlapping sets of mono-domain ($M_{CIP}$ <-> $M_{SA}$) and cross-domain ($X_{CIP}$ <-> $X_{SA}$) articles, and based upon the Broad configuration.

@@ -1,0 +1,290 @@
+---
+title: "Project Phase 2"
+author: "Fettah Kiran, Mohammad Imtiaz Nur"
+date: "4/9/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r data_read}
+csv_data = read.csv(file = "ArticleLevel-RegData-ALLSA_Xc_1_NData_655386_LONGXCIP2.csv",  header = TRUE)
+
+```
+
+```{r yearly_data_filter}
+library(dplyr)
+selected_columns <- c('SA1','SA2','SA3','SA4','SA5','SA6','CIP1','CIP2','CIP3','CIP4','CIP5','CIP6','CIP7','CIP8','CIP9')
+
+yp_74 <- csv_data %>% filter(Yp>=1970 & Yp<=1974) %>% select(selected_columns)
+yp_79 <- csv_data %>% filter(Yp>=1975 & Yp<=1979) %>% select(selected_columns)
+yp_84 <- csv_data %>% filter(Yp>=1980 & Yp<=1984) %>% select(selected_columns)
+yp_89 <- csv_data %>% filter(Yp>=1985 & Yp<=1989) %>% select(selected_columns)
+yp_94 <- csv_data %>% filter(Yp>=1990 & Yp<=1994) %>% select(selected_columns)
+yp_99 <- csv_data %>% filter(Yp>=1995 & Yp<=1999) %>% select(selected_columns)
+yp_04 <- csv_data %>% filter(Yp>=2000 & Yp<=2004) %>% select(selected_columns)
+yp_09 <- csv_data %>% filter(Yp>=2005 & Yp<=2009) %>% select(selected_columns)
+yp_14 <- csv_data %>% filter(Yp>=2010 & Yp<=2014) %>% select(selected_columns)
+yp_18 <- csv_data %>% filter(Yp>=2015 & Yp<=2018) %>% select(selected_columns)
+
+```
+```{r data_organize}
+
+i = 7 # CIP1 column position in df
+  
+cip_74 = cip_79 = cip_84 = cip_89 = cip_94 = cip_99 = cip_04 = cip_09 = cip_14 = cip_18 = c()
+
+while (i <= 15){
+  j = 1 #row
+  while (j <= 6){
+  
+      temp_74 =  sum(yp_74[,i]*yp_74[,j]) / sum(sum(yp_74[,i]*yp_74[,1]), sum(yp_74[,i]*yp_74[,2]),  sum(yp_74[,i]*yp_74[,3]), sum(yp_74[,i]*yp_74[,4]), sum(yp_74[,i]*yp_74[,5]), sum(yp_74[,i]*yp_74[,6]))
+      
+      cip_74 <- c(cip_74, temp_74)
+    
+      temp_79 =  sum(yp_79[,i]*yp_79[,j]) / sum(sum(yp_79[,i]*yp_79[,1]), sum(yp_79[,i]*yp_79[,2]),  sum(yp_79[,i]*yp_79[,3]), sum(yp_79[,i]*yp_79[,4]), sum(yp_79[,i]*yp_79[,5]), sum(yp_79[,i]*yp_79[,6]))
+    
+      cip_79 <- c(cip_79, temp_79)
+    
+      temp_84 =  sum(yp_84[,i]*yp_84[,j]) / sum(sum(yp_84[,i]*yp_84[,1]), sum(yp_84[,i]*yp_84[,2]),  sum(yp_84[,i]*yp_84[,3]), sum(yp_84[,i]*yp_84[,4]), sum(yp_84[,i]*yp_84[,5]), sum(yp_84[,i]*yp_84[,6]))  
+    
+      cip_84 <- c(cip_84, temp_84)
+    
+      temp_89 =  sum(yp_89[,i]*yp_89[,j]) / sum(sum(yp_89[,i]*yp_89[,1]), sum(yp_89[,i]*yp_89[,2]),  sum(yp_89[,i]*yp_89[,3]), sum(yp_89[,i]*yp_89[,4]), sum(yp_89[,i]*yp_89[,5]), sum(yp_89[,i]*yp_89[,6]))  
+    
+      cip_89 <- c(cip_89, temp_89)
+    
+      temp_94 =  sum(yp_94[,i]*yp_94[,j]) / sum(sum(yp_94[,i]*yp_94[,1]), sum(yp_94[,i]*yp_94[,2]),  sum(yp_94[,i]*yp_94[,3]), sum(yp_94[,i]*yp_94[,4]), sum(yp_94[,i]*yp_94[,5]), sum(yp_94[,i]*yp_94[,6]))  
+    
+      cip_94 <- c(cip_94, temp_94)
+    
+      temp_99 =  sum(yp_99[,i]*yp_99[,j]) / sum(sum(yp_99[,i]*yp_99[,1]), sum(yp_99[,i]*yp_99[,2]),  sum(yp_99[,i]*yp_99[,3]), sum(yp_99[,i]*yp_99[,4]), sum(yp_99[,i]*yp_99[,5]), sum(yp_99[,i]*yp_99[,6]))  
+    
+      cip_99 <- c(cip_99, temp_99)
+    
+      temp_04 =  sum(yp_04[,i]*yp_04[,j]) / sum(sum(yp_04[,i]*yp_04[,1]), sum(yp_04[,i]*yp_04[,2]),  sum(yp_04[,i]*yp_04[,3]), sum(yp_04[,i]*yp_04[,4]), sum(yp_04[,i]*yp_04[,5]), sum(yp_04[,i]*yp_04[,6]))  
+    
+      cip_04 <- c(cip_04, temp_04)
+    
+      temp_09 =  sum(yp_09[,i]*yp_09[,j]) / sum(sum(yp_09[,i]*yp_09[,1]), sum(yp_09[,i]*yp_09[,2]),  sum(yp_09[,i]*yp_09[,3]), sum(yp_09[,i]*yp_09[,4]), sum(yp_09[,i]*yp_09[,5]), sum(yp_09[,i]*yp_09[,6]))  
+    
+      cip_09 <- c(cip_09, temp_09)
+    
+      temp_14 =  sum(yp_14[,i]*yp_14[,j]) / sum(sum(yp_14[,i]*yp_14[,1]), sum(yp_14[,i]*yp_14[,2]),  sum(yp_14[,i]*yp_14[,3]), sum(yp_14[,i]*yp_14[,4]), sum(yp_14[,i]*yp_14[,5]), sum(yp_14[,i]*yp_14[,6]))  
+    
+      cip_14 <- c(cip_14, temp_14)
+    
+      temp_18 =  sum(yp_18[,i]*yp_18[,j]) / sum(sum(yp_18[,i]*yp_18[,1]), sum(yp_18[,i]*yp_18[,2]),  sum(yp_18[,i]*yp_18[,3]), sum(yp_18[,i]*yp_18[,4]), sum(yp_18[,i]*yp_18[,5]), sum(yp_18[,i]*yp_18[,6]))  
+    
+      cip_18 <- c(cip_18, temp_18)
+    
+    
+      j = j + 1
+  }
+
+  i = i + 1
+}
+
+```
+
+```{r figure_3A}
+library(tidyverse)
+library(ggplot2)
+library(ggpubr)
+require("scales")
+library(ggtext)
+
+subject_areas <- tibble(
+  names = c("Psychiatry & Psychology" , "Anatomy & Organisms" , "Phenomena & Processes", "Health", "Techniques & Equipment", "Technology & Inform. Science"),
+  Color = c("red", "darkorange1", "green1", "green4", "black", "gray43")
+  )
+
+plots <- list()
+
+years <- c(rep("1970-74", 6) , rep("1975-79", 6) , rep("1980-84", 6) , rep("1985-89", 6),rep("1990-94", 6) , rep("1995-99", 6) , rep("2000-04", 6) , rep("2005-09", 6) , rep("2010-14", 6) , rep("2015-18", 6))
+
+subjects <- rep(c("Psychiatry & Psychology" , "Anatomy & Organisms" , "Phenomena & Processes", "Health", "Techniques & Equipment", "Technology & Inform. Science") , 10)
+
+
+#plot1
+y_cip1 <- c(cip_74[1:6],cip_79[1:6],cip_84[1:6],cip_89[1:6],cip_94[1:6],cip_99[1:6],cip_04[1:6],cip_09[1:6],cip_14[1:6],cip_18[1:6])
+cip1 <- data.frame(years,subjects,y_cip1)
+cip1$subjects <- factor(cip1$subjects, levels = subject_areas$names)
+
+plots$p1 <- ggplot(cip1, aes(x=years, y=y_cip1, fill=subjects)) + 
+  geom_bar(position= position_stack(reverse=TRUE), stat="identity")+
+  scale_fill_manual(values = subject_areas$Color) +
+  scale_y_continuous(breaks=seq(0, 1, 0.2)) +
+  labs(
+    x = "",
+    y = "<span style='font-size:7pt'><span style='color:red;'>1:</span>
+    Neurosciences</span>" ) + 
+  theme(axis.title.y = element_markdown(lineheight = 1.1), axis.text.x = element_blank(),legend.position = "none")
+
+
+#plot2
+y_cip2 <- c(cip_74[19:24],cip_79[19:24],cip_84[19:24],cip_89[19:24],cip_94[19:24],cip_99[19:24],cip_04[19:24],cip_09[19:24],cip_14[19:24],cip_18[19:24])
+cip2 <- data.frame(years,subjects,y_cip2)
+cip2$subjects <- factor(cip2$subjects, levels = subject_areas$names)
+
+plots$p2 <- ggplot(cip2, aes(x=years, y=y_cip2, fill=subjects)) + 
+  geom_bar(position= position_stack(reverse=TRUE), stat="identity")+
+  scale_fill_manual(values = subject_areas$Color) +
+  scale_y_continuous(breaks=seq(0, 1, 0.2)) +
+  labs(
+    x = "",
+    y = "<span style='font-size:7pt'><span style='color:darkorange1;'>2:</span>
+    Biology</span>" ) + 
+  theme(axis.title.y = element_markdown(lineheight = 1.1), axis.text.x = element_blank(),legend.position = "none") 
+
+#plot3
+y_cip3 <- c(cip_74[25:30],cip_79[25:30],cip_84[25:30],cip_89[25:30],cip_94[25:30],cip_99[25:30],cip_04[25:30],cip_09[25:30],cip_14[25:30],cip_18[25:30])
+cip3 <- data.frame(years,subjects,y_cip3)
+cip3$subjects <- factor(cip3$subjects, levels = subject_areas$names)
+
+plots$p3 <- ggplot(cip3, aes(x=years, y=y_cip3, fill=subjects)) + 
+  geom_bar(position= position_stack(reverse=TRUE), stat="identity")+
+  scale_fill_manual(values = subject_areas$Color) +
+  scale_y_continuous(breaks=seq(0, 1, 0.2)) +
+  labs(
+    x = "",
+    y = "<span style='font-size:7pt'><span style='color:gold1;'>3:</span>
+    Psychology</span>" ) +
+  theme(axis.title.y = element_markdown(lineheight = 1.1), axis.text.x = element_blank(),legend.position = "none") 
+
+
+#plot4
+y_cip4 <- c(cip_74[43:48],cip_79[43:48],cip_84[43:48],cip_89[43:48],cip_94[43:48],cip_99[43:48],cip_04[43:48],cip_09[43:48],cip_14[43:48],cip_18[43:48])
+cip4 <- data.frame(years,subjects,y_cip4)
+cip4$subjects <- factor(cip4$subjects, levels = subject_areas$names)
+
+plots$p4 <- ggplot(cip4, aes(x=years, y=y_cip4, fill=subjects)) + 
+  geom_bar(position= position_stack(reverse=TRUE), stat="identity")+
+  scale_fill_manual(values = subject_areas$Color) +
+  scale_y_continuous(breaks=seq(0, 1, 0.2)) +
+  labs(
+     x = "",
+    y = "<span style='font-size:7pt'><span style='color:green1;'>4:</span>
+    Biotech. &<br>  Genetics </span>" )+
+  theme(axis.title.y = element_markdown(lineheight = 1.1), axis.text.x = element_blank(),legend.position = "none") 
+
+
+#plot5
+y_cip5 <- c(cip_74[7:12],cip_79[7:12],cip_84[7:12],cip_89[7:12],cip_94[7:12],cip_99[7:12],cip_04[7:12],cip_09[7:12],cip_14[7:12],cip_18[7:12])
+cip5 <- data.frame(years,subjects,y_cip5)
+cip5$subjects <- factor(cip5$subjects, levels = subject_areas$names)
+
+plots$p5 <- ggplot(cip5, aes(x=years, y=y_cip5, fill=subjects)) + 
+  geom_bar(position= position_stack(reverse=TRUE), stat="identity")+
+  scale_fill_manual(values = subject_areas$Color) +
+  scale_y_continuous(breaks=seq(0, 1, 0.2)) +
+  labs(
+    x = "",
+    y = "<span style='font-size:7pt'><span style='color:darkgreen;'>5:</span>
+    Medical Specialty</span>" ) +
+  theme(axis.title.y = element_markdown(lineheight = 1.1),axis.text.x = element_blank(),legend.position = "none")
+
+
+#plot6
+y_cip6 <- c(cip_74[13:18],cip_79[13:18],cip_84[13:18],cip_89[13:18],cip_94[13:18],cip_99[13:18],cip_04[13:18],cip_09[13:18],cip_14[13:18],cip_18[13:18])
+cip6 <- data.frame(years,subjects,y_cip6)
+cip6$subjects <- factor(cip6$subjects, levels = subject_areas$names)
+
+plots$p6 <- ggplot(cip6, aes(x=years, y=y_cip6, fill=subjects)) + 
+  geom_bar(position= position_stack(reverse=TRUE), stat="identity")+
+  scale_fill_manual(values = subject_areas$Color) +
+  scale_y_continuous(breaks=seq(0, 1, 0.2)) +
+  labs(
+    x = "",
+    y = "<span style='font-size:7pt'><span style='color:green;'>6:</span>
+    Health Sciences</span>" ) +
+  theme(axis.title.y = element_markdown(lineheight = 1.1),axis.text.x = element_blank(),legend.position = "none") 
+
+
+#plot7
+y_cip7 <- c(cip_74[31:36],cip_79[31:36],cip_84[31:36],cip_89[31:36],cip_94[31:36],cip_99[31:36],cip_04[31:36],cip_09[31:36],cip_14[31:36],cip_18[31:36])
+cip7 <- data.frame(years,subjects,y_cip7)
+cip7$subjects <- factor(cip7$subjects, levels = subject_areas$names)
+
+plots$p7 <- ggplot(cip7, aes(x=years, y=y_cip7, fill=subjects)) + 
+  geom_bar(position= position_stack(reverse=TRUE), stat="identity")+
+  scale_fill_manual(values = subject_areas$Color) +
+  scale_y_continuous(breaks=seq(0, 1, 0.2)) +
+  scale_x_discrete(labels = c("1970\n-74", "1975\n-79", "1980\n-84", "1985\n-89", "1990\n-94", "1995\n-99", "2000\n-04", "2005\n-09", "2010\n-14", "2015\n-18"))+
+  labs(
+    x = "",
+    y = "<span style='font-size:7pt'><span style='color:lightgreen;'>7:</span>
+    Pathology <br>& Pharmacology </span>" ) +
+  theme(axis.title.y = element_markdown(lineheight = 1.1), axis.text.x = element_text(size=5,angle = 0),legend.position = "none") 
+
+
+#plot8
+y_cip8 <- c(cip_74[37:42],cip_79[37:42],cip_84[37:42],cip_89[37:42],cip_94[37:42],cip_99[37:42],cip_04[37:42],cip_09[37:42],cip_14[37:42],cip_18[37:42])
+cip8 <- data.frame(years,subjects,y_cip8)
+cip8$subjects <- factor(cip8$subjects, levels = subject_areas$names)
+
+plots$p8 <- ggplot(cip8, aes(x=years, y=y_cip8, fill=subjects)) + 
+  geom_bar(position= position_stack(reverse=TRUE), stat="identity")+
+  scale_fill_manual(values = subject_areas$Color) +
+  scale_y_continuous(breaks=seq(0, 1, 0.2)) +
+  scale_x_discrete(labels = c("1970\n-74", "1975\n-79", "1980\n-84", "1985\n-89", "1990\n-94", "1995\n-99", "2000\n-04", "2005\n-09", "2010\n-14", "2015\n-18"))+
+  labs(
+    x = "",
+    y = "<span style='font-size:7pt'><span style='color:gray19;'>8:</span>
+    Eng. & Informatics </span>" ) +
+  theme(axis.title.y = element_markdown(lineheight = 1.1), axis.text.x = element_text(size=5,angle = 0),legend.position = "none") 
+
+
+#plot9
+y_cip9 <- c(cip_74[49:54],cip_79[49:54],cip_84[49:54],cip_89[49:54],cip_94[49:54],cip_99[49:54],cip_04[49:54],cip_09[49:54],cip_14[49:54],cip_18[49:54])
+cip9 <- data.frame(years,subjects,y_cip9)
+cip9$subjects <- factor(cip9$subjects, levels = subject_areas$names)
+
+plots$p9 <- ggplot(cip9, aes(x=years, y=y_cip9, fill=subjects)) + 
+  geom_bar(position= position_stack(reverse=TRUE), stat="identity")+
+  scale_fill_manual(values = subject_areas$Color) +
+  scale_y_continuous(breaks=seq(0, 1, 0.2)) +
+  scale_x_discrete(labels = c("1970\n-74", "1975\n-79", "1980\n-84", "1985\n-89", "1990\n-94", "1995\n-99", "2000\n-04", "2005\n-09", "2010\n-14", "2015\n-18"))+ 
+  labs(
+    x = "",
+    y = "<span style='font-size:7pt'><span style='color:gray69;'>9:</span>
+    Chem. & Phys. &  Math </span>" ) +
+  theme(axis.title.y = element_markdown(lineheight = 1.1), axis.text.x = element_text(size=5,angle = 0),legend.position = "none")
+```
+
+```{r}
+library(cowplot)
+library(rlang)
+
+legend <- get_legend(
+  plots$p1+ labs(fill = "Subject Areas")+
+    guides(color = guide_legend(title.hjust = -2, nrow = 1))  +
+    theme(legend.position = "top",legend.text=element_text(size=7),legend.key.size = unit(.3, "cm")))
+
+legend
+plot_merge <- plot_grid(
+  plots$p1 + theme(legend.position="none"),
+  plots$p2 + theme(legend.position="none"),
+  plots$p3 + theme(legend.position="none"),
+  plots$p4 + theme(legend.position="none"),
+  plots$p5 + theme(legend.position="none"),
+  plots$p6 + theme(legend.position="none"),
+  plots$p7 + theme(legend.position="none"),
+  plots$p8 + theme(legend.position="none"),
+  plots$p9 + theme(legend.position="none"),
+  legend,
+  rel_heights = c(0.9, 0.9, 1),
+  rel_weidhts = c(1, 0.9, 0,9),
+  align = 'vh',
+  hjust = -1,
+  nrow = 3,
+  ncol = 3
+)
+
+plot_final <- plot_grid(legend, plot_merge, rel_heights = c(.1, 1),nrow = 2, ncol = 1, rel_weidths = c(1, 1),align = 'vh')
+
+plot_final
+
+```

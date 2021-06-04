@@ -1,0 +1,276 @@
+---
+title: "Project Phase 2"
+author: "Fettah Kiran, Mohammad Imtiaz Nur"
+date: "4/9/2021"
+output: pdf_document
+---
+
+
+
+
+```{r read_csv, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,fig.width=8, fig.height=18)
+library("tidyverse")
+library(ggplot2)
+library(ggpubr)
+library(scales)
+
+df_article <- read.csv(file = 'ArticleLevel-RegData-ALLSA_Xc_1_NData_655386_LONGXCIP2.csv', header= TRUE)
+#csv_data
+print(paste0("# of rows: ", nrow(df_article)))
+head(df_article)
+
+``` 
+
+
+``` {r Filters}
+#### Filters
+###### Filter Year [2009-2018]
+###### Filter IRegionRefinedp > 0 and IRegionRefinedp < 4
+
+ 
+
+df_article = df_article %>% filter(Yp >= 2009)
+df_article = df_article %>% filter(Yp <= 2018)
+df_article = df_article %>% filter(IRegionRefinedp > 0 & IRegionRefinedp < 4)
+print(paste0("# of rows: ", nrow(df_article)))
+
+ 
+
+
+## df_mono: where both CIP and SA "mono"
+## df_XD: where both CIP and SA "XD"
+df_mono = df_article %>% filter(NEUROLONGXSAp == 0 & NEUROLONGXCIPp == 0)
+df_XD = df_article %>% filter(NEUROLONGXSAp == 1 & NEUROLONGXCIPp == 1)
+print(paste0("# of rows: ", nrow(df_mono)))
+print(head(df_mono))
+print(paste0("# of rows: ", nrow(df_XD)))
+head(df_XD)
+
+```
+
+```  {r mono}
+
+### MONO matrix
+mono_mat = matrix(0L, nrow = 9, ncol = 6)
+# mono_mat
+for(i in 1:nrow(df_mono)){
+    row = df_mono[i,]
+    vSA = c(row$SA1, row$SA2, row$SA3, row$SA4, row$SA5, row$SA6)
+    vCIP = c(row$CIP3, row$CIP1, row$CIP4, row$CIP2, row$CIP6, row$CIP7, row$CIP5, row$CIP8, row$CIP9)
+    #Rowi = which(vCIP > 0)
+    vSA = round(vSA / sum(vSA),2)
+    
+    #for(k in 1:length(Rowi)){
+    for(k in which(vCIP > 0)){
+        for(j in 1:6){
+            mono_mat[[k,j]] = mono_mat[[k,j]] + vSA[j]
+            #mono_mat[[Rowi[k],j]] = mono_mat[[Rowi[k],j]] + vSA[j] 
+        }
+        
+    }
+    
+}
+print(mono_mat)
+
+ 
+```
+
+``` {r XD}
+### XD matrix
+XD_mat = matrix(0L, nrow = 9, ncol = 6)
+# XD_mat
+for(i in 1:nrow(df_XD)){
+    row = df_XD[i,]
+    vSA = c(row$SA1, row$SA2, row$SA3, row$SA4, row$SA5, row$SA6)
+    vCIP = c(row$CIP3, row$CIP1, row$CIP4, row$CIP2, row$CIP6, row$CIP7, row$CIP5, row$CIP8, row$CIP9)
+    vSA = round((vSA / sum(vSA)),2)
+    for(k in which(vCIP > 0)){
+        for(j in 1:6){
+            XD_mat[[k,j]] = XD_mat[[k,j]] + vSA[j] 
+        }
+        
+    }
+    
+}
+print(XD_mat)
+
+ 
+
+## Normalize and Scale : Mono Matrix
+# library(scales)
+m = mono_mat
+for(i in 1:9){
+    row = mono_mat[i,]
+    m[i,] = rescale(row, to=c(0,1))
+    
+}
+mm_b = apply(m, 2, function(x) {ifelse(x > 0.5, round(x,2), 0)})
+mm = rescale(mm_b, to=c(0,0.02))
+print(mm)
+ 
+
+## Normalize and Scale : XD Matrix
+
+x = XD_mat
+for(i in 1:9){
+    row = XD_mat[i,]
+    x[i,] = sapply(row, function(X) {(X - min(row))/(max(row)-min(row))})
+}
+XD_b = apply(x, 2, function(x) {ifelse(x > 0.5, round(x,2), 0)})
+XD = rescale(XD_b, to=c(0,0.02))
+XD
+ 
+
+## Diff between Mono and XD
+diff_x_m = XD_b - mm_b
+
+ 
+
+## keeping only positive(+) values
+diff_x_m = apply(diff_x_m, 2, function(x) {ifelse(x > 0, round(x,2), 0)})
+diff_x_m = rescale(diff_x_m, to=c(0,0.02))
+diff_x_m
+
+``` 
+
+``` {r monoPlot}
+nodes = data.frame("name" = c("CIP3", "CIP1", "CIP4", "CIP2", "CIP6", "CIP7", "CIP5", "CIP8", "CIP9", "SA1", "SA2", "SA3", "SA4", "SA5", "SA6"))
+links = as.data.frame(matrix(c(0,9, mm[1,1],
+                               0,12, mm[1,4],
+                               1,9, mm[2,1],
+                               1,10, mm[2,2],
+                               1,12, mm[2,4],
+                               2,10, mm[3,2],
+                               2,11, mm[3,3],
+                               2,12, mm[3,4],
+                               3,10, mm[4,2],
+                               3,11, mm[4,3],
+                               3,12, mm[4,4],
+                               4,10, mm[5,2],
+                               4,12, mm[5,4],
+                               5,10, mm[6,2],
+                               5,11, mm[6,3],
+                               5,12, mm[6,4],
+                               6,12, mm[7,4],
+                               7,10, mm[8,2],
+                               7,12, mm[8,4],
+                               8,10, mm[9,2],
+                               8,11, mm[9,3],
+                               8,12, mm[9,4],
+                               12,12, 0.02), byrow = TRUE, ncol = 3))
+names(links) = c("source", "target", "value")
+links$group <- as.factor(c("type_0","type_0","type_1","type_1","type_1","type_2", "type_2","type_2","type_3","type_3", "type_3","type_4","type_4","type_5","type_5","type_5","type_6","type_7","type_7","type_8","type_8","type_8", "type_12"))
+node_color <- 'd3.scaleOrdinal() .domain(["CIP3", "CIP1", "CIP4", "CIP2", "CIP6", "CIP7", "CIP5", "CIP8", "CIP9", "SA1", "SA2", "SA3", "SA4", "SA5", "SA6", "type_0", "type_1", "type_2", "type_3", "type_4", "type_5", "type_6", "type_7", "type_8", "type_12"]) .range(["yellow", "red", "darkolivegreen" , "orange", "seagreen", "palegreen", "green", "gray", "gray", "red", "orange", "lightgreen", "darkolivegreen", "black", "gray", "yellow", "red", "darkolivegreen" , "orange", "seagreen", "palegreen", "green", "gray", "gray","white"])'
+
+library(networkD3)
+p = sankeyNetwork(Links = links, Nodes = nodes,
+Source = "source", Target = "target",
+Value = "value", NodeID = "name",
+fontSize= 12, nodeWidth = 20,
+height = 800, width = "100%",
+colourScale=node_color,
+LinkGroup="group",
+iterations = 0,
+nodePadding=10)
+
+p
+
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/Pics_htmls/Mono_Files/mono.html"))
+# 
+# library(webshot)
+# #webshot::install_phantomjs()
+# webshot("/Users/f3tth/R-Projects/6303-SM/SM-Project/Milestone2/Pics_htmls/Mono_Files/mono.html", "Pics_htmls/Mono_Files/mono.png")
+```
+
+
+``` {r XDPlot}
+XD
+nodes = data.frame("name" = c("CIP3", "CIP1", "CIP4", "CIP2", "CIP6", "CIP7", "CIP5", "CIP8", "CIP9", "SA1", "SA2", "SA3", "SA4", "SA5", "SA6"))
+links = as.data.frame(matrix(c(0,13, XD[1,5],
+                               1,13, XD[2,5],
+                               2,12, XD[3,4],
+                               2,13, XD[3,5],
+                               3,10, XD[4,2],
+                               3,12, XD[4,4],
+                               3,13, XD[4,5],
+                               4,13, XD[5,5],
+                               5,13, XD[6,5],
+                               6,12, XD[7,4],
+                               6,13, XD[7,5],
+                               7,13, XD[8,5],
+                               #8,13, XD[9,5],
+                             8,13, 0.02), byrow = TRUE, ncol = 3))
+
+names(links) = c("source", "target", "value")
+links$group <- as.factor(c("type_0","type_1","type_2","type_2","type_3","type_3", "type_3","type_4","type_5","type_6", "type_6","type_7","type_8"))
+# coloring the 
+node_color <- 'd3.scaleOrdinal() .domain(["CIP3", "CIP1", "CIP4", "CIP2", "CIP6", "CIP7", "CIP5", "CIP8", "CIP9", "SA1", "SA2", "SA3", "SA4", "SA5", "SA6", "type_0", "type_1", "type_2", "type_3","type_4", "type_5","type_6","type_7","type_8"])
+.range(["yellow", "red", "darkolivegreen" , "orange", "seagreen", "palegreen", "green", "gray", "gray", "red", "orange", "lightgreen", "darkolivegreen", "black", "gray", "yellow", "red", "darkolivegreen" , "orange", "seagreen", "palegreen", "green", "gray", "gray","white"])'
+
+library(networkD3)
+p = sankeyNetwork(Links = links, Nodes = nodes,
+Source = "source", Target = "target",
+Value = "value", NodeID = "name",
+fontSize= 12, nodeWidth = 20,
+height = 800, width = "100%",
+colourScale=node_color,
+LinkGroup="group",
+iterations = 0,
+nodePadding=10)
+
+p
+
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/Pics_htmls/XD_Files/XD.html"))
+# 
+# library(webshot)
+# #webshot::install_phantomjs()
+# webshot("/Users/f3tth/R-Projects/6303-SM/SM-Project/Milestone2/Pics_htmls/XD_Files/XD.html", "Pics_htmls/XD_Files/XD.png")
+```
+
+``` {r X_mPlot}
+diff_x_m
+nodes = data.frame("name" = c("CIP3", "CIP1", "CIP4", "CIP2", "CIP6", "CIP7", "CIP5", "CIP8", "CIP9", "SA1", "SA2", "SA3", "SA4", "SA5"))
+links = as.data.frame(matrix(c(0,13, diff_x_m[1,5],
+                               1,13, diff_x_m[2,5],
+                               2,13, diff_x_m[3,5],
+                               3,13, diff_x_m[4,5],
+                               4,13, diff_x_m[5,5],
+                               5,13, diff_x_m[6,5],
+                               6,13, diff_x_m[7,5],
+                               7,13, diff_x_m[8,5],
+                               8,13, 0.02), byrow = TRUE, ncol = 3))
+names(links) = c("source", "target", "value")
+links$group <- as.factor(c("type_0","type_1","type_2","type_3","type_4", "type_5","type_6","type_7","type_8"))
+# coloring the 
+node_color <- 'd3.scaleOrdinal() .domain(["CIP3", "CIP1", "CIP4", "CIP2", "CIP6", "CIP7", "CIP5", "CIP8", "CIP9", "SA1", "SA2", "SA3", "SA4", "SA5", "SA6", "type_0", "type_1", "type_2", "type_3","type_4", "type_5","type_6","type_7","type_8"]) .range(["yellow", "red", "darkolivegreen" , "orange", "seagreen", "palegreen", "green", "gray", "gray", "red", "orange", "lightgreen", "darkolivegreen", "black", "gray", "yellow", "red", "darkolivegreen" , "orange", "seagreen", "palegreen", "green", "gray", "gray","white"])'
+
+library(networkD3)
+p_diff = sankeyNetwork(Links = links, Nodes = nodes,
+Source = "source", Target = "target",
+Value = "value", NodeID = "name",
+fontSize= 12, nodeWidth = 20,
+height = 800, width = "100%",
+colourScale=node_color,
+LinkGroup="group",
+iterations = 0,
+nodePadding=10)
+
+p_diff
+
+library(htmlwidgets)
+saveWidget(p_diff, file=paste0( getwd(), "/Pics_htmls/X_M_Files/diff_x_m.html"))
+
+library(webshot)
+#webshot::install_phantomjs()
+webshot("/Users/f3tth/R-Projects/6303-SM/SM-Project/Milestone2/Pics_htmls/X_M_Files/diff_x_m.html", "Pics_htmls/X_M_Files/diff_x_m.png")
+```
+
+
+
+
+
+
+

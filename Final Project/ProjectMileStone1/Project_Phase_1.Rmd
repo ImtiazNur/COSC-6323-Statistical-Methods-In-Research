@@ -1,0 +1,340 @@
+---
+title: "Project_Phase_1"
+author: "Mohammad Imtiaz Nur"
+date: "3/8/2021"
+output: pdf_document
+---
+
+```{r read_csv, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,fig.width=8, fig.height=18)
+library("tidyverse")
+library(ggplot2)
+library(ggpubr)
+
+csv_data <- read.csv(file = 'ArticleLevel-RegData-ALLSA_Xc_1_NData_655386_LONGXCIP2.csv', header= TRUE)
+#csv_data
+```
+```{r plot1_SA, include=FALSE}
+years <- sort(unique(csv_data$Yp))
+years <-years[35:length(years)]
+#years
+
+# Filtering yearly publications above z-score
+yearlyPublications_above_z = c()
+i = 1
+while (i <= length(years)){
+  filtered_data <- csv_data %>% filter(Zp >= 0 & Yp== years[i]) %>% select(NSAp)
+  data_length <- length(filtered_data$NSAp)
+  yearlyPublications_above_z <- c(yearlyPublications_above_z, data_length)
+  i = i + 1
+}
+
+yearlyPublications_above_z
+
+# Filtering yearly publications below z-score
+yearlyPublications_below_z = c()
+i = 1
+while (i <= length(years)){
+  filtered_data <- csv_data %>% filter(Zp < 0 & Yp== years[i]) %>% select(NSAp)
+  data_length <- length(filtered_data$NSAp)
+  yearlyPublications_below_z <- c(yearlyPublications_below_z, data_length)
+  i = i + 1
+}
+#yearlyPublications_below_z
+
+# Yearly citations above and below average for SA (min: 1, max:4)
+oneAboveAvgSA <- c()
+oneBelowAvgSA <- c()
+twoAboveAvgSA <- c()
+twoBelowAvgSA <- c()
+threeAboveAvgSA <- c()
+threeBelowAvgSA <- c()
+fourAboveAvgSA <- c()
+fourBelowAvgSA <- c()
+
+j = 1
+while (j <= length(years)){
+  filtered_data <- csv_data %>% filter(Yp== years[j]) %>% select(NSAp,Zp)
+  
+  oneAboveSACount = 0
+  oneBelowSACount = 0
+  twoAboveSACount = 0
+  twoBelowSACount = 0
+  threeAboveSACount = 0
+  threeBelowSACount = 0
+  fourAboveSACount = 0
+  fourBelowSACount = 0
+  
+  i = 1
+  while (i <= length(filtered_data$NSAp)) {
+    if (filtered_data$NSAp[i] == 1) {
+      if(filtered_data$Zp[i] >= 0) { oneAboveSACount = oneAboveSACount + 1}
+      else { oneBelowSACount = oneBelowSACount + 1}
+    }
+    else if (filtered_data$NSAp[i] == 2) {
+      if(filtered_data$Zp[i] >= 0){ twoAboveSACount = twoAboveSACount + 1}
+      else { twoBelowSACount = twoBelowSACount + 1}
+    }
+    else if (filtered_data$NSAp[i] == 3) {
+      if(filtered_data$Zp[i] >= 0){ threeAboveSACount = threeAboveSACount + 1}
+      else{ threeBelowSACount = threeBelowSACount + 1 }
+    }
+    else if (filtered_data$NSAp[i] >= 4){
+      if(filtered_data$Zp[i]>=0){fourAboveSACount = fourAboveSACount + 1}
+      else { fourBelowSACount = fourBelowSACount + 1}
+    }
+    
+    i= i + 1
+  }
+  oneAboveAvgSA <- c(oneAboveAvgSA, oneAboveSACount/yearlyPublications_above_z[j])
+  oneBelowAvgSA <- c(oneBelowAvgSA, oneBelowSACount/yearlyPublications_below_z[j])
+  
+  twoAboveAvgSA <- c(twoAboveAvgSA, twoAboveSACount/yearlyPublications_above_z[j])
+  twoBelowAvgSA <- c(twoBelowAvgSA, twoBelowSACount/yearlyPublications_below_z[j])
+  
+  threeAboveAvgSA <- c(threeAboveAvgSA, threeAboveSACount/yearlyPublications_above_z[j])
+  threeBelowAvgSA <- c(threeBelowAvgSA, threeBelowSACount/yearlyPublications_below_z[j])
+  
+  fourAboveAvgSA <- c(fourAboveAvgSA, fourAboveSACount/yearlyPublications_above_z[j])
+  fourBelowAvgSA <- c(fourBelowAvgSA, fourBelowSACount/yearlyPublications_below_z[j])
+  
+  j = j + 1
+}
+
+df_SA <- data.frame(years, oneAboveAvgSA, oneBelowAvgSA, twoAboveAvgSA, twoBelowAvgSA,
+                 threeAboveAvgSA, threeBelowAvgSA, fourAboveAvgSA, fourBelowAvgSA)
+
+colors <- c("1(M)" = "black", "2(X)" = "#b3c8f2", "3(X)"  = "#6693ed","4(X)"="royalblue" )
+citations <- c("Above-average citations" = 1, "Below-average citations" = 2)
+
+plot1_SA <- ggplot(df_SA, aes(x=years)) +
+  theme_bw() +
+  geom_line(aes(y = oneAboveAvgSA, color = "1(M)", linetype="Above-average citations")) +
+  geom_line(aes(y = oneBelowAvgSA, color = "1(M)", linetype="Below-average citations"))+
+  geom_line(aes(y = twoAboveAvgSA, color = "2(X)", linetype="Above-average citations")) +
+  geom_line(aes(y = twoBelowAvgSA, color = "2(X)", linetype="Below-average citations"))+
+  geom_line(aes(y = threeAboveAvgSA, color = "3(X)", linetype="Above-average citations")) +
+  geom_line(aes(y = threeBelowAvgSA, color = "3(X)", linetype="Below-average citations"))+
+  geom_line(aes(y = fourAboveAvgSA, color = "4(X)", linetype="Above-average citations")) +
+  geom_line(aes(y = fourBelowAvgSA, color = "4(X)", linetype="Below-average citations"))+
+  scale_color_manual(values=colors) +
+  
+  scale_x_continuous(breaks = round(seq(1980, 2020, by = 5),1))+ 
+  scale_y_continuous( breaks = round(seq(0, 1, by = 0.2),1)) +
+  labs(tag='Cross - Topic (SA)',color = "# categories per publication", linetype= NULL) +
+  theme(axis.title.x=element_blank(),axis.title.y=element_blank(),plot.tag.position=c(1,0.5),plot.tag=element_text(angle=-90))
+
+#plot1_SA
+```
+
+
+```{r Plot2_CIP, include=FALSE}
+
+# Yearly citations above and below average for CIP (min: 1, max:9)
+oneAboveAvgCIP <- c()
+oneBelowAvgCIP <- c()
+twoAboveAvgCIP <- c()
+twoBelowAvgCIP <- c()
+threeAboveAvgCIP <- c()
+threeBelowAvgCIP <- c()
+fourAboveAvgCIP <- c()
+fourBelowAvgCIP <- c()
+
+j = 1
+while (j <= length(years)){
+  filtered_data_cip <- csv_data %>% filter(Yp== years[j]) %>% select(NCIPp,Zp,MeanZJp)
+  
+  oneAboveCIPCount = 0
+  oneBelowCIPCount = 0
+  twoAboveCIPCount = 0
+  twoBelowCIPCount = 0
+  threeAboveCIPCount = 0
+  threeBelowCIPCount = 0
+  fourAboveCIPCount = 0
+  fourBelowCIPCount = 0
+  
+  i = 1
+  while (i <= length(filtered_data_cip$NCIPp)){
+    
+    if (filtered_data_cip$NCIPp[i]==1) {
+      if(filtered_data_cip$Zp[i]>=0) { oneAboveCIPCount = oneAboveCIPCount + 1 }
+      else { oneBelowCIPCount = oneBelowCIPCount + 1}
+    }
+    else if (filtered_data_cip$NCIPp[i]==2) {
+      if(filtered_data_cip$Zp[i]>=0) { twoAboveCIPCount = twoAboveCIPCount + 1 }
+      else { twoBelowCIPCount = twoBelowCIPCount + 1}
+    }
+    else if (filtered_data_cip$NCIPp[i]==3) {
+      if(filtered_data_cip$Zp[i]>=0) { threeAboveCIPCount = threeAboveCIPCount + 1 }
+      else { threeBelowCIPCount = threeBelowCIPCount + 1 }
+    }
+    else if (filtered_data_cip$NCIPp[i]>=4){
+      if(filtered_data_cip$Zp[i]>=0) { fourAboveCIPCount = fourAboveCIPCount + 1 }
+      else { fourBelowCIPCount = fourBelowCIPCount + 1 }
+    }
+    i= i + 1
+  }
+  
+  oneAboveAvgCIP <- c(oneAboveAvgCIP, oneAboveCIPCount/yearlyPublications_above_z[j])
+  oneBelowAvgCIP <- c(oneBelowAvgCIP, oneBelowCIPCount/yearlyPublications_below_z[j])
+  
+  twoAboveAvgCIP <- c(twoAboveAvgCIP, twoAboveCIPCount/yearlyPublications_above_z[j])
+  twoBelowAvgCIP <- c(twoBelowAvgCIP, twoBelowCIPCount/yearlyPublications_below_z[j])
+  
+  threeAboveAvgCIP <- c(threeAboveAvgCIP, threeAboveCIPCount/yearlyPublications_above_z[j])
+  threeBelowAvgCIP <- c(threeBelowAvgCIP, threeBelowCIPCount/yearlyPublications_below_z[j])
+  
+  fourAboveAvgCIP <- c(fourAboveAvgCIP, fourAboveCIPCount/yearlyPublications_above_z[j])
+  fourBelowAvgCIP <- c(fourBelowAvgCIP, fourBelowCIPCount/yearlyPublications_below_z[j])
+  
+  j = j + 1
+}
+
+df_cip <- data.frame(years, oneAboveAvgCIP, oneBelowAvgCIP, twoAboveAvgCIP, twoBelowAvgCIP,
+                 threeAboveAvgCIP, threeBelowAvgCIP, fourAboveAvgCIP, fourBelowAvgCIP)
+
+plot2_CIP <- ggplot(df_cip, aes(x=years)) +
+  theme_bw() +
+  theme(legend.position = "none",axis.title.x=element_blank(),axis.title.y=element_blank()) +
+  geom_line(aes(y = oneAboveAvgCIP, color = "1(M)", linetype="Above-average citations")) +
+  geom_line(aes(y = oneBelowAvgCIP, color = "1(M)", linetype="Below-average citations"))+
+  geom_line(aes(y = twoAboveAvgCIP, color = "2(X)", linetype="Above-average citations")) +
+  geom_line(aes(y = twoBelowAvgCIP, color = "2(X)", linetype="Below-average citations"))+
+  geom_line(aes(y = threeAboveAvgCIP, color = "3(X)", linetype="Above-average citations")) +
+  geom_line(aes(y = threeBelowAvgCIP, color = "3(X)", linetype="Below-average citations"))+
+  geom_line(aes(y = fourAboveAvgCIP, color = "4(X)", linetype="Above-average citations")) +
+  geom_line(aes(y = fourBelowAvgCIP, color = "4(X)", linetype="Below-average citations"))+
+  scale_color_manual(values=colors) +
+  
+  scale_x_continuous(breaks = round(seq(1980, 2020, by = 5),1))+ 
+  scale_y_continuous( breaks = round(seq(0, 1, by = 0.2),1))
+
+plot2_CIP
+
+plot2_insider <- ggplot(df_cip, aes(x=years)) + 
+  theme_classic() +
+  theme(legend.position = "none",axis.title.x=element_blank(),axis.title.y=element_blank()) +
+  geom_line(aes(y = log(twoAboveAvgCIP), linetype="Above-average citations"),color = "#b3c8f2") +
+  geom_line(aes(y = log(twoBelowAvgCIP), linetype="Below-average citations"), color = "#b3c8f2")+
+  geom_line(aes(y = log(threeAboveAvgCIP), linetype="Above-average citations"), color = "#6693ed") +
+  geom_line(aes(y = log(threeBelowAvgCIP), linetype="Below-average citations"), color = "#6693ed")+
+  geom_line(aes(y = log(fourAboveAvgCIP), linetype="Above-average citations"), color = "royalblue") +
+  geom_line(aes(y = log(fourBelowAvgCIP), linetype="Below-average citations"), color = "royalblue") +
+  
+  scale_x_continuous(breaks = round(seq(1980, 2020, by = 10),1)) +
+  scale_y_continuous(breaks=c(0.001,0.005,0.010,0.100))
+
+plot2_final <- plot2_CIP +
+  annotation_custom(ggplotGrob(plot2_insider), xmin = 1980, xmax = 2020, ymin = 0.18, ymax = 0.75) +
+  labs(tag='Cross - Discipline (CIP)')+theme(plot.tag=element_text(angle=-90),plot.tag.position=c(1, 0.5))
+
+plot2_final
+```
+
+```{r plot3_sa_cip, include=FALSE}
+# Calculate year wise above and below citations based on SA & CIP type
+oneAboveSA_CIP <- c()
+oneBelowSA_CIP <- c()
+twoAboveSA_CIP <- c()
+twoBelowSA_CIP <- c()
+threeAboveSA_CIP <- c()
+threeBelowSA_CIP <- c()
+fourAboveSA_CIP <- c()
+fourBelowSA_CIP <- c()
+
+j = 1
+while (j <= length(years)){
+  filtered_data_sa_cip <- csv_data %>% filter(Yp== years[j]) %>% select(NCIPp,NSAp,Zp,MeanZJp)
+  oneAbove = 0
+  twoAbove = 0
+  threeAbove = 0
+  fourAbove = 0
+  oneBelow = 0
+  twoBelow = 0
+  threeBelow = 0
+  fourBelow = 0
+  
+  i = 1
+  while (i <= length(filtered_data_sa_cip$NCIPp)){
+
+    if (filtered_data_sa_cip$NCIPp[i]==1||filtered_data_sa_cip$NSAp[i]==1){
+      if(filtered_data_sa_cip$Zp[i]>=0){oneAbove = oneAbove + 1}
+      else{oneBelow = oneBelow + 1}
+    }
+    else if (filtered_data_sa_cip$NCIPp[i]==2||filtered_data_sa_cip$NSAp[i]==2){
+      if(filtered_data_sa_cip$Zp[i]>=0){twoAbove = twoAbove + 1}
+      else{twoBelow = twoBelow + 1}
+    }
+    else if (filtered_data_sa_cip$NCIPp[i]==3||filtered_data_sa_cip$NSAp[i]==3){
+      if(filtered_data_sa_cip$Zp[i]>=0){threeAbove = threeAbove + 1}
+      else{threeBelow = threeBelow + 1}
+    }
+    else if (filtered_data_sa_cip$NCIPp[i]>=4||filtered_data_sa_cip$NSAp[i]>=4){
+      if(filtered_data_sa_cip$Zp[i]>=0){fourAbove = fourAbove + 1}
+      else{fourBelow = fourBelow + 1}
+    }
+    i= i + 1
+  }
+  oneAboveSA_CIP <- c(oneAboveSA_CIP,oneAbove/yearlyPublications_above_z[j])
+  oneBelowSA_CIP <- c(oneBelowSA_CIP,oneBelow/yearlyPublications_below_z[j])
+  
+  twoAboveSA_CIP <- c(twoAboveSA_CIP,twoAbove/yearlyPublications_above_z[j])
+  twoBelowSA_CIP <- c(twoBelowSA_CIP,twoBelow/yearlyPublications_below_z[j])
+  
+  threeAboveSA_CIP <- c(threeAboveSA_CIP,threeAbove/yearlyPublications_above_z[j])
+  threeBelowSA_CIP <- c(threeBelowSA_CIP,threeBelow/yearlyPublications_below_z[j])
+  
+  fourAboveSA_CIP <- c(fourAboveSA_CIP,fourAbove/yearlyPublications_above_z[j])
+  fourBelowSA_CIP <- c(fourBelowSA_CIP,fourBelow/yearlyPublications_below_z[j])
+  
+  j = j + 1
+}
+
+
+df_sa_cip <- data.frame(years,oneAboveSA_CIP,oneBelowSA_CIP,twoAboveSA_CIP,twoBelowSA_CIP,threeAboveSA_CIP
+                   ,threeBelowSA_CIP,fourAboveSA_CIP,fourBelowSA_CIP)
+
+plot3 <- ggplot(df_sa_cip, aes(x=years)) +
+  theme_bw()+
+  theme(legend.position = "none",axis.title.x=element_blank(),axis.title.y=element_blank()) +
+  geom_line(aes(y = oneAboveSA_CIP, color = "1(M)", linetype="Above-average citations")) +
+  geom_line(aes(y = oneBelowSA_CIP, color = "1(M)", linetype="Below-average citations"))+
+  geom_line(aes(y = twoAboveSA_CIP, color = "2(X)", linetype="Above-average citations")) +
+  geom_line(aes(y = twoBelowSA_CIP, color = "2(X)", linetype="Below-average citations"))+
+  geom_line(aes(y = threeAboveSA_CIP, color = "3(X)", linetype="Above-average citations")) +
+  geom_line(aes(y = threeBelowSA_CIP, color = "3(X)", linetype="Below-average citations"))+
+  geom_line(aes(y = fourAboveSA_CIP, color = "4(X)", linetype="Above-average citations")) +
+  geom_line(aes(y = fourBelowSA_CIP, color = "4(X)", linetype="Below-average citations"))+
+  scale_color_manual(values=colors) +
+  scale_x_continuous(breaks = round(seq(1980, 2020, by = 5),1))+ 
+  scale_y_continuous( breaks = round(seq(0, 1, by = 0.2),1))
+
+plot3_insider <- ggplot(df_sa_cip, aes(x=years)) +
+  theme_bw()+
+  theme(legend.position = "none",axis.title.x=element_blank(),axis.title.y=element_blank()) +
+  geom_line(aes(y = log(twoAboveSA_CIP), linetype="Above-average citations"), color = "#b3c8f2") +
+  geom_line(aes(y = log(twoBelowSA_CIP), linetype="Below-average citations"), color = "#b3c8f2")+
+  geom_line(aes(y = log(threeAboveSA_CIP), linetype="Above-average citations"), color = "#6693ed") +
+  geom_line(aes(y = log(threeBelowSA_CIP), linetype="Below-average citations"), color ="#6693ed" )+
+  geom_line(aes(y = log(fourAboveSA_CIP), linetype="Above-average citations"), color = "royalblue") +
+  geom_line(aes(y = log(fourBelowSA_CIP), linetype="Below-average citations"), color = "royalblue")+
+  scale_x_continuous(breaks = round(seq(1980, 2025, by = 10),1))+ 
+  scale_y_continuous(breaks=c(0.001,0.005,0.010,0.060,0.100))
+
+plot3_final <- plot3 + 
+  annotation_custom(ggplotGrob(plot3_insider), xmin = 1980, xmax = 2020,ymin = 0.18, ymax = 0.75)+
+  labs(tag='Cross - Topic (CIP & SA)')+
+  theme(plot.tag=element_text(angle=-90),plot.tag.position=c(1, 0.5))
+
+plot3_final
+```
+
+```{r A}
+legends <- get_legend(plot1_SA)
+plot_A <- ggarrange(plot1_SA, plot2_final, plot3_final, legends,
+  font.label = list(size = 14, color = "black", face = "bold", family = NULL),
+                    ncol = 1, nrow = 6,common.legend = TRUE)
+annotate_figure(plot_A,top = "Fraction of articales featuring cross domain combinations, f_#(t|Z)",
+                fig.lab = "A", fig.lab.face = "bold"
+)
+```
