@@ -1,0 +1,117 @@
+---
+title: "hw2_Mohammad_Imtiaz_Nur"
+author: "Mohammad Imtiaz Nur"
+date: "3/5/2021"
+output: pdf_document
+---
+# ID: 1878074
+
+## Task 1:
+
+Let,
+
+$p_1$ = proportion of success for reach-first condition,
+
+$p_2$ = watch-first condition.
+
+$H_0$: $p_1$ = $p_2$ [The difference observed in the looking behavior between the two groups is not significant].
+
+$H_1$: $p_1$ $\neq$ $p_2$ [The difference observed in the looking behavior between the two groups is significant].
+
+
+```{r task_1}
+
+research<-prop.test(x = c(11, 4), n = c(15, 15),
+              alternative = "two.sided")
+research
+```
+
+Selecting $\alpha$ = 0.05, the p value (0.02846) is less than 0.05. So, we can reject the null hypothesis. So, the proportion in looking behavior is significant, hence, the difference observed between the two groups greater than can be attributed to chance.
+
+Selecting $\alpha$ = 0.01, for the p value (0.0284597) is greater than 0.01. Therefore, we fail to reject the null hypothesis. Hence, we can say that the difference observed between the two groups greater than can not be attributed to chance.
+
+
+## Task 2:
+
+Let
+
+$H_0$: $\mu_1$ = $\mu_2$ [No significant improvement after applying the new method].
+
+$H_1$: $\mu_1$ $\neq$ $\mu_2$
+
+```{r task_2}
+
+# performance after applying new method
+new <-c(13.0, 15.1, 16.5, 19.0, 20.2, 19.9, 23.3, 17.3, 
+        16.7, 16.7, 18.4, 16.6, 19.4, 23.6, 16.5, 24.5)
+
+# performance after applying standard method
+standard <-c(20.1, 16.7, 25.6, 25.4, 22.0, 16.8, 23.8, 23.6,
+             27, 19.2, 19.3, 26.7, 14.7, 16.9, 23.7, 21.7)
+
+test <- t.test(new, standard)
+test
+
+```
+
+Since, the p value (0.028) is less than 0.05, we can reject the null hypothesis. Hence, there is significance difference in the improvement after applying the new method of reading.
+
+## Task 3:
+
+Let,
+
+$H_0$: $\mu_1$ = $\mu_2$. No difference in the main level of hydrocarbons between the two species.
+
+$H_1$: $\mu_1$ $\neq$ $\mu_2$
+
+```{r task_3a}
+spec1 <- c(34, 1, 167, 20)
+spec2 <- c(45, 86, 82, 70, 160, 170)
+
+carbon <- t.test(spec1, spec2)
+carbon
+```
+
+Since, the p value (0.33) is much greater than significance level 0.05, we fail to reject the null hypothesis. Hence, there is no significant difference in the main level of hydrocarbons between the two species of fish.
+
+But this seems a little bit problematic since the means are different and we can see there is an outlier in the data for species 1 which is 167. Let's try to keep that out from the dataset and then again perform the t test and check the result. 
+
+```{r task_3b}
+spec1_1 <- c(34, 1, 20)
+spec2 <- c(45, 86, 82, 70, 160, 170)
+
+carbon_1 <- t.test(spec1_1, spec2)
+carbon_1
+```
+This time the p value (0.0088) is less than 0.05. Therefore, we can reject the null hypothesis and conclude that the there is a significant difference in the main level of hydrocarbons between the two species of fish.
+
+## Task 4:
+Let,
+
+$H_0$: $p_1$ $\geq$ $0.10$ [10% or more customers drink from another brand of soft drink on a regular basis].
+
+$H_1$: $p_1$ < 0.10 [Less than 10% customers drink from another brand of soft drink on a regular basis].
+``` {r task_4}
+
+#proportion test
+proportion<-prop.test(18, 100, p = 0.1, alternative = "less")
+proportion
+
+```
+
+The proportion test on the data, we get that the p value is (0.994) which is larger than the significance value of 0.05. Therefore, we fail to reject the null hypothesis. Hence, we can say that the bottlers claim is not true.
+
+## Task 5:
+Let,
+
+$H_0$: $\mu$ = $7.5$ [Babies from the neighborhood are healthy].
+
+$H_1$: $\mu$ < $7.5$ [Babies from the neighborhood are underweight].
+
+```{r task_5}
+w <- c(6.0, 8.6, 7.5, 8.2, 8.0, 8.1, 6.4, 6.0, 7.2, 4.8)
+weight <- t.test(w, mu = 7.5, alternative = "less")
+weight
+```
+
+From the result, we get that the p value is (0.1543) which is larger than the significance value of 0.01. Therefore, we fail to reject the null hypothesis. Hence, we can conclude that the babies from the neighborhood are not underweight.

@@ -1,0 +1,133 @@
+---
+title: "HW 5"
+author: "Mohammad Imtiaz Nur"
+date: "5/3/2021"
+output: pdf_document
+---
+# ID: 1878074
+
+## Task 1
+
+
+```{r task1}
+
+require(lme4)
+require(lmerTest)
+library(FSA)
+library(rcompanion)
+
+time <- c(1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2,
+          4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8, 8, 8, 8,
+          13, 13, 13, 13, 13, 13, 13, 13)
+
+temperature <- c(2, 2, 4.5, 4.5, 21, 21, 38, 38, 2, 2, 4.5, 4.5,
+                 21, 21, 38, 38, 2, 2, 4.5, 4.5, 21, 21, 38, 38,
+                 2, 2, 4.5, 4.5, 21, 21, 38, 38, 2, 2, 4.5, 4.5,
+                 21, 21, 38, 38 )
+
+rating <- c(2.38, 2.19, 2.67, 2.39, 2.93, 2.72, 3.81, 3.07, 2.74,
+            2.50, 2.81, 2.64, 2.97, 2.88, 4.14, 3.14, 2.75, 2.74,
+            3.00, 2.79, 3.05, 3.21, 4.78, 3.45, 3.28, 2.83, 3.58,
+            3.23, 3.68, 3.25, 5.78, 5.28, 3.81, 3.05, 3.67, 3.61,
+            4.04, 4.23, 6.05, 7.17)
+
+time <- as.factor(time)
+temperature <- as.factor(temperature)
+
+data <- data.frame(time,temperature,rating)
+
+
+model = lmer(rating ~ temperature + (1|time), data=data, REML=TRUE)
+
+model.null = lmer(rating ~ 1 + (1|time), data = data, REML = TRUE)
+
+anova(model, model.null)
+```
+
+From the anova test between the model and the null model, we found that the significance is 0.001 for the model. Hence, the model is better than the null model. Our the null hypothesis is the temperature has no effect on rating.
+
+## Histogram
+
+```{r histogram}
+
+res = residuals(model)
+
+plotNormalHistogram(res)
+
+```
+From the histogram of the residuals, it follows normal distribution.
+
+ 
+## Fitted vs Residuals
+```{r fitted_vs_residuals}
+plot(fitted(model),residuals(model))
+```
+From the residual vs fitted plot, we can see there is is no consistent pattern. So the residuals are not reasonably homoscedastic.
+
+## Comparing the LS mean for each temperature
+
+```{r lsmeans, warning=FALSE}
+require("lsmeans")
+marginal <- lsmeans(model, "temperature")
+
+CLD = multcomp::cld(marginal, alpha=0.05, Letters=letters, adjust="tukey") 
+
+library(ggplot2)
+ggplot(CLD, aes(x = temperature, y = lsmean, label = .group)) +
+  geom_point(shape  = 15, size   = 5) +
+  geom_errorbar(aes(ymin =  lower.CL, ymax  =  upper.CL), width =  0.2, size  =  0.7) +
+  theme_bw() +
+  geom_text(nudge_x = c(0, 0, 0), nudge_y = c(1.5, 1.5, 1.5))
+
+```
+From the above plot, it is clear that the temperature value 38 has higher value than all other temperatures.
+
+## Significance of the Temperature and Time
+
+
+```{r significance_temperatrure}
+print("Temparature")
+anova(model)
+
+
+print("Time")
+rand(model)
+```
+
+
+Here, the p-value for both temperature and time are very much less than 0.001. Hence, both time and temparature have quite significant effect.
+
+## Pairwise difference of temperature
+
+
+```{r paired}
+pairs(marginal, adjust="tukey")
+```
+From the pairwise difference, we can see that the temperature 38 is significantly differenet than all other temperature group as all pairs with 38 has p_value below 0.001 significance level. So, we can say it rejects the null hypothesis that all pairs are equal.
+
+
+## Task 2
+
+```{r task2}
+
+variety <- c("Variety A", "Variety B", "Variety C", "Variety D", 
+             "Variety A", "Variety B", "Variety C", "Variety D", 
+             "Variety A", "Variety B", "Variety C", "Variety D", 
+             "Variety A", "Variety B", "Variety C", "Variety D", 
+             "Variety A", "Variety B", "Variety C", "Variety D", 
+             "Variety A", "Variety B", "Variety C", "Variety D", 
+             "Variety A", "Variety B", "Variety C", "Variety D")
+
+yield <- c(8.3, 9.1, 10.1, 7.8, 9.4, 9.0, 10.0, 8.2, 9.1, 8.1,
+           9.6, 8.1, 9.1, 8.2, 9.3, 7.9, 9.0, 8.8, 9.8, 7.7,
+           8.9, 8.4, 9.5, 8.0, 8.9, 8.3, 9.4, 8.1)
+
+df <- data.frame(variety, yield)
+
+df$variety <-ordered(df$variety,
+                     levels = c("Variety A", "Variety B", "Variety C", "Variety D"))
+levels(df$variety)
+
+kruskal.test(yield ~ variety, data = df)
+```
+Here, p-value (4.701e-05) is less than the significance level 0.01. Hence, there is significant evidence that the distribution is different for at least one variety.
